@@ -7,7 +7,6 @@ const jwt = require('../services/jwt')
 class AdminControllers {
   
   constructor(){
-    console.log('Controlador de admins, creado.');
   }
 
   getResponse(){

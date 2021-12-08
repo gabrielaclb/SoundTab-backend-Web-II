@@ -38,12 +38,51 @@ class AlbumController {
         }
     }
 
+    getByBand = async (req,res) => {
+        const response = this.getResponse();
+        try {
+            const albums = await db.asyncQuery(queries.getByBand, [req.params.id]);
+            response.data = albums;
+        } catch (error) {
+            response.status = 500;
+            response.error = error;
+        }finally{
+            res.status(200).send(response);
+        }
+    }
+
     create = async (req,res) => {
         const response = this.getResponse();
         try {
-            const {name, }
-            const album = await db.asyncQuery(queries.create, [req.body.name, req.body.artist_id]);
-            response.data = album;
+            const {title, band_id, file_id} = req.body;
+            const album = await db.asyncQuery(queries.create, [title, band_id, file_id]);
+            response.data = {id: album.insertId, ...req.body};
+        } catch (error) {
+            response.status = 500;
+            response.error = error;
+        }finally{
+            res.status(200).send(response);
+        }
+    }
+
+    update = async (req,res) => {
+        const response = this.getResponse();
+        try {
+            const {id, title, band_id, file_id} = req.body;
+            await db.asyncQuery(queries.update, [title, id]);
+            response.data = {...req.body};
+        } catch (error) {
+            response.status = 500;
+            response.error = error;
+        }finally{
+            res.status(200).send(response);
+        }
+    }
+
+    delete = async (req,res) => {
+        const response = this.getResponse();
+        try {
+            await db.asyncQuery(queries.delete, [req.params.id]);
         } catch (error) {
             response.status = 500;
             response.error = error;
@@ -56,9 +95,10 @@ class AlbumController {
 
 // La tabla de album tiene las siguientes columnas: id, title, file_id
 const queries = {
-    getAll: 'SELECT * FROM album',
-    getById: 'SELECT * FROM album WHERE id = ?',
-    create: 'INSERT INTO album (title, file_id) VALUES (?, ?)',
+    getAll: 'SELECT album.*, file.url as file_url FROM album LEFT JOIN file ON album.file_id = file.id',
+    getById: 'SELECT album.*, file.url as file_url FROM album LEFT JOIN file ON album.file_id = file.id WHERE album.id = ?',
+    getByBand: 'SELECT album.*, file.url as file_url FROM album LEFT JOIN file ON album.file_id = file.id WHERE album.band_id = ?',
+    create: 'INSERT INTO album (title, band_id, file_id) VALUES (?, ?, ?)',
     update: 'UPDATE album SET title = ? WHERE id = ?',
     delete: 'DELETE FROM album WHERE id = ?'
 }
