@@ -56,15 +56,17 @@ class AlbumController {
         const response = this.getResponse();
         try {
             const {title, band_id} = req.body;
-            let file_id = null;
+            let file = {
+                id: null,
+                url: null
+            };
 
             if(req.file){
-                const file = await fileService.uploadAttachedFile(req.file, 'album');
-                file_id = file.id;
+                file = await fileService.uploadAttachedFile(req.file, 'band');
             }
-
-            const album = await db.asyncQuery(queries.create, [title, band_id, file_id]);
-            response.data = {...req.body, id: album.insertId};
+      
+            let album = await db.asyncQuery(queries.create, [title, band_id, file.id]);
+            response.data = { title, band_id, id: album.insertId, file_url: file.url , file_id: file.id};
         } catch (error) {
             console.log(error);
             response.status = 500;
@@ -77,9 +79,15 @@ class AlbumController {
     update = async (req,res) => {
         const response = this.getResponse();
         try {
-            const {id, title, band_id, file_id} = req.body;
+            const {id, title} = req.body;
+            let file = {url: null, id: null};
+            if(req.file){
+                file = await fileService.uploadAttachedFile(req.file, 'band');
+                await db.asyncQuery(queries.updateFile, [file.id, id]);
+            }
             await db.asyncQuery(queries.update, [title, id]);
-            response.data = {...req.body};
+            let album = await db.asyncQuery(queries.getById, [id]);
+            response.data = {...album[0]};
         } catch (error) {
             response.status = 500;
             response.error = error;
@@ -109,7 +117,8 @@ const queries = {
     getByBand: 'SELECT album.*, file.url as file_url FROM album LEFT JOIN file ON album.file_id = file.id WHERE album.band_id = ?',
     create: 'INSERT INTO album (title, band_id, file_id) VALUES (?, ?, ?)',
     update: 'UPDATE album SET title = ? WHERE id = ?',
-    delete: 'DELETE FROM album WHERE id = ?'
+    delete: 'DELETE FROM album WHERE id = ?',
+    updateFile: 'UPDATE album SET file_id = ? WHERE id = ?'
 }
 
 module.exports = new AlbumController();

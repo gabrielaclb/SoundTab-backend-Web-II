@@ -43,15 +43,16 @@ class BandController {
     let response = this.getResponse();
     try {
         let { title, description} = req.body;
-        let file_id = null;
-
+        let file = {
+          id: null,
+          url: null
+        };
         if(req.file){
-            const file = await fileService.uploadAttachedFile(req.file, 'band');
-            file_id = file.id;
+            file = await fileService.uploadAttachedFile(req.file, 'band');
         }
 
-        let band = await db.asyncQuery(queries.create, [title, description, file_id]);
-        response.data = { id: band.insertId, title, description, file_id };
+        let band = await db.asyncQuery(queries.create, [title, description, file.id]);
+        response.data = { id: band.insertId, title, description, file_url: file.url , file_id: file.id };
     } catch (err) {
       console.log(err);
       response.error = err;
@@ -65,8 +66,17 @@ class BandController {
     let response = this.getResponse();
     try {
       let { title, description, id } = req.body;
+      let file = {url: null, id: null};
+
+      if(req.file){
+        file = await fileService.uploadAttachedFile(req.file, 'band');
+        await db.asyncQuery(queries.updateFile, [file.id, id]);
+      }
+
       await db.asyncQuery(queries.update, [title, description, id]);
-      response.data = { id, title, description};
+      let band = await db.asyncQuery(queries.getById, [id]);
+      response.data = {...band[0]};
+
     } catch (err) {
       console.log(err);
       response.error = err;
@@ -101,6 +111,7 @@ const queries = {
   create: `INSERT INTO band (title, description, file_id) VALUES (?, ?, ?)`,
   update: `UPDATE band SET title = ?, description = ? WHERE id = ?`,
   delete: `DELETE FROM band WHERE id = ?`,
+  updateFile: `UPDATE band SET file_id = ? WHERE id = ?`,
 };
 
 module.exports = new BandController();

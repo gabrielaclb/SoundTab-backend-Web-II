@@ -7,7 +7,7 @@ const upload = multer();
 
 api.get('/band/admin', bandController.getAll);
 api.get('/band/admin/id/:id', bandController.getById);
-api.put('/band/admin', bandController.update);
+api.put('/band/admin', upload.single('file'), bandController.update);
 api.post('/band/admin', upload.single('file'), bandController.create);
 api.delete('/band/admin/id/:id', bandController.delete);
 
