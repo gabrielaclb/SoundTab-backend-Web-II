@@ -67,8 +67,12 @@ app.get('/public/*', (req,res,next)=>{
   }
 })
 
-app.get('*', (req,res)=>{
-  res.sendFile('./public/dist/index.html');
-})
+// Serve static files
+app.use(express.static(__dirname + '/../public/dist'));
+
+// Send all requests to index.html
+app.get('/*', function(req, res) {
+  res.sendFile(path.join(__dirname + '/../public/dist/index.html'));
+});
 
 module.exports = app
