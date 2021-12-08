@@ -56,17 +56,13 @@ app.use('/api/v1', [
 
 app.get('/health', (req,res)=>{res.sendStatus(200)});
 
-app.get('/static/*', (req,res,next)=>{
-  let pathUrl = path.join(__dirname,('../public'+req.path));
+app.get('/public/*', (req,res,next)=>{
+  let pathUrl = path.join(__dirname,('../'+req.path));
   if(fs.existsSync(pathUrl)){
     res.status(200).sendFile(pathUrl);
   }else{
     res.sendStatus(404);
   }
 })
-
-app.get('/*', function (req, res,next) {
-  res.sendFile(path.join(__dirname))
-});
 
 module.exports = app
