@@ -50,7 +50,7 @@ const ensureUser = (req, res, next) => {
     token = token.replace('Bearer ','');
     payload = jwt.decode(token, config.secret)
 
-    if(payload.role) {
+    if(!payload.type_user_id) {
       return res.status(403).send({
         "error" : ["Usuario no autorizado"]
       })
@@ -83,7 +83,7 @@ const ensureAdmin = (req, res, next) => {
   try {
     token = token.replace('Bearer ','');
     payload = jwt.decode(token, config.secret)
-    if(payload.role != 2) {
+    if(payload.type_user_id != 2) {
       return res.status(403).send({
         "error" : ["Administrador no autorizado"]
       })

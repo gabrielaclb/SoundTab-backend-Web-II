@@ -5,10 +5,14 @@ const mdAuth = require('../middlewares/auth');
 const multer = require('multer');
 const upload = multer();
 
-api.get('/band/admin', bandController.getAll);
-api.get('/band/admin/id/:id', bandController.getById);
-api.put('/band/admin', upload.single('file'), bandController.update);
-api.post('/band/admin', upload.single('file'), bandController.create);
-api.delete('/band/admin/id/:id', bandController.delete);
+
+/* Users */
+api.get('/band', [mdAuth.ensureAuth], bandController.getAll);
+api.get('/band/id/:id', [mdAuth.ensureAuth], bandController.getById);
+
+/* Admin */
+api.put('/band/admin', [mdAuth.ensureAuth, mdAuth.ensureAdmin], upload.single('file'), bandController.update);
+api.post('/band/admin', [mdAuth.ensureAuth, mdAuth.ensureAdmin], upload.single('file'), bandController.create);
+api.delete('/band/admin/id/:id', [mdAuth.ensureAuth, mdAuth.ensureAdmin], bandController.delete);
 
 module.exports = api;

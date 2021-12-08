@@ -5,11 +5,13 @@ const mdAuth = require('../middlewares/auth');
 const multer = require('multer');
 const upload = multer();
 
-api.get('/album/admin', albumController.getAll);
-api.get('/album/admin/id/:id', albumController.getById);
-api.get('/album/admin/band/id/:id', albumController.getByBand);
-api.put('/album/admin', upload.single('file'), albumController.update);
-api.post('/album/admin', upload.single('file'), albumController.create);
-api.delete('/album/admin/id/:id', albumController.delete);
+/* Users */
+api.get('/album',[mdAuth.ensureAuth], albumController.getAll);
+api.get('/album/id/:id',[mdAuth.ensureAuth], albumController.getById);
+api.get('/album/band/id/:id',[mdAuth.ensureAuth],albumController.getByBand);
+/* Admins */
+api.put('/album/admin', [mdAuth.ensureAuth, mdAuth.ensureAdmin], upload.single('file'), albumController.update);
+api.post('/album/admin', [mdAuth.ensureAuth, mdAuth.ensureAdmin], upload.single('file'), albumController.create);
+api.delete('/album/admin/id/:id', [mdAuth.ensureAuth, mdAuth.ensureAdmin], albumController.delete);
 
 module.exports = api;
