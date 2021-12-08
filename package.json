@@ -11,11 +11,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://luisedo97@bitbucket.org/gendoagency/generador-qr-backend.git"
+    "url": "git+https://gabrielaclb@github.com/gabrielaclb/soundset-backend.git"
   },
   "author": "Ing. Luis Araujo",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/gendoagency/generador-qr-backend#readme",
+  "homepage": "https://github.com/gabrielaclb/soundset-backend",
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
     "cors": "^2.8.5",
