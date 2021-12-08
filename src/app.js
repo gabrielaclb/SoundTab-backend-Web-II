@@ -67,4 +67,8 @@ app.get('/public/*', (req,res,next)=>{
   }
 })
 
+app.get('*', (req,res)=>{
+  res.sendFile('./public/dist/index.html');
+})
+
 module.exports = app

@@ -1,5 +1,7 @@
 /logs
 /node_modules
-/public
+/public/album
+/public/band
+/public/sound
 github.txt
 package-lock.json
