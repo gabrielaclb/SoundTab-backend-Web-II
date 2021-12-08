@@ -42,7 +42,7 @@ class BandController {
   create = async (req, res) => {
     let response = this.getResponse();
     try {
-        let { name, description} = req.body;
+        let { title, description} = req.body;
         let file_id = null;
 
         if(req.file){
@@ -50,8 +50,8 @@ class BandController {
             file_id = file.id;
         }
 
-        let band = await db.asyncQuery(queries.create, [name, description, file_id]);
-        response.data = { id: band.insertId, name, description, file_id };
+        let band = await db.asyncQuery(queries.create, [title, description, file_id]);
+        response.data = { id: band.insertId, title, description, file_id };
     } catch (err) {
       console.log(err);
       response.error = err;
@@ -64,9 +64,9 @@ class BandController {
   update = async (req, res) => {
     let response = this.getResponse();
     try {
-      let { name, description, id } = req.body;
-      await db.asyncQuery(queries.update, [name, description, id]);
-      response.data = { id, name, description, file_id };
+      let { title, description, id } = req.body;
+      await db.asyncQuery(queries.update, [title, description, id]);
+      response.data = { id, title, description};
     } catch (err) {
       console.log(err);
       response.error = err;

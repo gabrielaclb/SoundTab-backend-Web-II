@@ -11,7 +11,7 @@ class SoundController {
     };
   }
 
-  getAdminList = async (req, res) => {
+  getAll = async (req, res) => {
     let response = this.getResponse();
     try {
       const sounds = await db.asyncQuery(queries.getAll);
@@ -23,7 +23,7 @@ class SoundController {
     }
   }
 
-  getAdminDetails = async (req, res) => {
+  getById = async (req, res) => {
     let response = this.getResponse();
     try {
       const sound = await db.asyncQuery(queries.getById, [req.params.id]);
@@ -35,12 +35,24 @@ class SoundController {
     }
   }
 
+  getByAlbum = async (req, res) => {
+    let response = this.getResponse();
+    try {
+      const sounds = await db.asyncQuery(queries.getByAlbumId, [req.params.id]);
+      response.data = sounds;
+    } catch (error) {
+      response.error = error;
+    }finally{
+      res.status(200).send(response);
+    }
+  }
+
   create = async (req, res) => {
     let response = this.getResponse();
     try {
-      const {title, album_id, band_id} = req.body;
+      const {title, album_id} = req.body;
       const file = await fileService.uploadAttachedFile(req.file, 'sound');
-      const sound = await db.asyncQuery(queries.create, [title, album_id, band_id, file.id]);
+      const sound = await db.asyncQuery(queries.create, [title, album_id, file.id]);
       response.data = {id: sound.insertId, file_id: sound.id, ...req.body};
     } catch (error) {
       response.error = error;
@@ -52,8 +64,8 @@ class SoundController {
   update = async (req, res) => {
     let response = this.getResponse();
     try {
-      const {title, album_id, id} = req.body;
-      const sound = await db.asyncQuery(queries.update, [title, album_id, id]);
+      const {title, id} = req.body;
+      const sound = await db.asyncQuery(queries.update, [title, id]);
       response.data = {...req.body};
     } catch (error) {
       response.error = error;
@@ -90,8 +102,8 @@ const queries = {
   getByAlbumId: "SELECT * FROM sound WHERE album_id = ?;",
   getByBandId: "SELECT * FROM sound WHERE band_id = ?;",
 
-  create: 'INSERT INTO sound (title, album_id, band_id, file_id) VALUES (?, ?, ?, ?);',
-  update: 'UPDATE sound SET title = ?, album_id = ? WHERE id = ?;',
+  create: 'INSERT INTO sound (title, album_id, file_id) VALUES (?, ?, ?);',
+  update: 'UPDATE sound SET title = ? WHERE id = ?;',
   delete: 'DELETE FROM sound WHERE id = ?;',
   play: 'UPDATE sound SET reproduction_quantity = reproduction_quantity + 1 WHERE id = ?;'
 

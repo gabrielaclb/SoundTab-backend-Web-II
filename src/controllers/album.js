@@ -64,7 +64,7 @@ class AlbumController {
             }
 
             const album = await db.asyncQuery(queries.create, [title, band_id, file_id]);
-            response.data = {id: album.insertId, ...req.body};
+            response.data = {...req.body, id: album.insertId};
         } catch (error) {
             console.log(error);
             response.status = 500;

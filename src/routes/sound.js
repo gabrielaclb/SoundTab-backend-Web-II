@@ -38,9 +38,11 @@ api.get('/sound/search/:query',[mdAuth.ensureAuth, mdAuth.ensureUser],soundContr
 
 //Administradores
 //Lista de canciones
-api.get('/sound/admin', soundController.getAdminList);
+api.get('/sound/admin', soundController.getAll);
+//Lista de canciones por album
+api.get('/sound/admin/album/id/:id', soundController.getByAlbum);
 //Detalle de cancion
-api.get('/sound/admin/id/:id', soundController.getAdminDetails);
+api.get('/sound/admin/id/:id', soundController.getById);
 //Crear cancion
 api.post('/sound/admin/create', upload.single('file'), soundController.create);
 //Actualizar cancion
