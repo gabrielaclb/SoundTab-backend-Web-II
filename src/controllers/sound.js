@@ -53,7 +53,13 @@ class SoundController {
       const {title, album_id} = req.body;
       const file = await fileService.uploadAttachedFile(req.file, 'sound');
       const sound = await db.asyncQuery(queries.create, [title, album_id, file.id]);
-      response.data = {id: sound.insertId, file_id: sound.id, ...req.body};
+      response.data = {
+        id: sound.insertId,
+        album_id: album_id,
+        file_id: sound.id,
+        file_url: file.url,
+        reproduction_quantity: 0
+      };
     } catch (error) {
       response.error = error;
     }finally{
@@ -91,16 +97,18 @@ class SoundController {
 const queries = {
   
   getAll: `
-    SELECT sound.* FROM sound 
+    SELECT 
+      sound.*,
+      file.url as file_url
+    FROM sound 
       INNER JOIN album ON sound.album_id = album.id 
-      INNER JOIN band ON sound.band_id = band.id 
       INNER JOIN file ON sound.file_id = file.id
     ORDER BY sound.id DESC
   `,
-  getById: 'SELECT * FROM sound WHERE id = ?;',
-  getByTitle: "SELECT * FROM sound WHERE title LIKE ?;",
-  getByAlbumId: "SELECT * FROM sound WHERE album_id = ?;",
-  getByBandId: "SELECT * FROM sound WHERE band_id = ?;",
+  getById: 'SELECT sound.*, file.url as file_url FROM sound INNER JOIN file ON sound.file_id = file.id INNER JOIN album ON sound.album_id = album.id WHERE id = ?;',
+  getByTitle: "SELECT sound.*, file.url as file_url FROM sound INNER JOIN file ON sound.file_id = file.id INNER JOIN album ON sound.album_id = album.id WHERE title LIKE ?;",
+  getByAlbumId: "SELECT sound.*, file.url as file_url FROM sound INNER JOIN file ON sound.file_id = file.id INNER JOIN album ON sound.album_id = album.id WHERE album_id = ?;",
+  getByBandId: "SELECT sound.*, file.url as file_url FROM sound INNER JOIN file ON sound.file_id = file.id INNER JOIN album ON sound.album_id = album.id WHERE band_id = ?;",
 
   create: 'INSERT INTO sound (title, album_id, file_id) VALUES (?, ?, ?);',
   update: 'UPDATE sound SET title = ? WHERE id = ?;',
