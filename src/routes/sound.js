@@ -2,7 +2,10 @@ const express = require('express');
 const api = express.Router();
 const soundController = require('../controllers/sound');
 const mdAuth = require('../middlewares/auth');
+const multer = require('multer');
+const upload = multer();
 
+/*
 //Rutas usuarios
 //Lista de canciones
 api.get('/sound',[mdAuth.ensureAuth, mdAuth.ensureUser], soundController.getSounds);
@@ -30,15 +33,19 @@ api.get('/sound/album/id/:id',[mdAuth.ensureAuth, mdAuth.ensureUser], soundContr
 api.get('/sound/band/id/:id',[mdAuth.ensureAuth, mdAuth.ensureUser], soundController.getBand);
 //Buscar canciones
 api.get('/sound/search/:query',[mdAuth.ensureAuth, mdAuth.ensureUser],soundController.searchSound);
+*/
+
 
 //Administradores
 //Lista de canciones
-api.get('/sound/admin/list',[mdAuth.ensureAuth, mdAuth.ensureAdmin], soundController.getList);
+api.get('/sound/admin', soundController.getAdminList);
 //Detalle de cancion
-api.get('/sound/admin/details/id/:id', [mdAuth.ensureAuth, mdAuth.ensureAdmin],soundController.getDetails);
+api.get('/sound/admin/id/:id', soundController.getAdminDetails);
 //Crear cancion
-api.post('/sound/admin/create',[mdAuth.ensureAuth, mdAuth.ensureAdmin], soundController.create);
+api.post('/sound/admin/create', upload.single('file'), soundController.create);
 //Actualizar cancion
-api.put('/sound/admin/update/id/:id',[mdAuth.ensureAuth, mdAuth.ensureAdmin], soundController.update);
+api.put('/sound/admin', soundController.update);
 //Eliminar cancion
-api.delete('/sound/admin/delete/id/:id',[mdAuth.ensureAuth, mdAuth.ensureAdmin], soundController.delete);
+api.delete('/sound/admin/id/:id', soundController.delete);
+
+module.exports = api;

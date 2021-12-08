@@ -1,4 +1,5 @@
 const db = require('./db');
+const fileService = require('../services/file');;
 
 class AlbumController {
     constructor() {
@@ -54,10 +55,18 @@ class AlbumController {
     create = async (req,res) => {
         const response = this.getResponse();
         try {
-            const {title, band_id, file_id} = req.body;
+            const {title, band_id} = req.body;
+            let file_id = null;
+
+            if(req.file){
+                const file = await fileService.uploadAttachedFile(req.file, 'album');
+                file_id = file.id;
+            }
+
             const album = await db.asyncQuery(queries.create, [title, band_id, file_id]);
             response.data = {id: album.insertId, ...req.body};
         } catch (error) {
+            console.log(error);
             response.status = 500;
             response.error = error;
         }finally{

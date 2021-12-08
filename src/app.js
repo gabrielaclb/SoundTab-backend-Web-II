@@ -11,6 +11,8 @@ const express = require('express'),
 const adminRoutes = require('./routes/admin');
 const bandRoutes = require('./routes/band');
 const albumRoutes = require('./routes/album');
+const soundRoutes = require('./routes/sound');
+
 // configure response
 app.use(express.urlencoded({
   extended: true
@@ -49,6 +51,7 @@ app.use('/api/v1', [
   adminRoutes,
   bandRoutes,
   albumRoutes,
+  soundRoutes
 ]);
 
 app.get('/health', (req,res)=>{res.sendStatus(200)});

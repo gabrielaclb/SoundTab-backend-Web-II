@@ -32,6 +32,7 @@ const uploadAttachedFile = async (file, folder = 'files', alt = "", omitSaveDB =
     fs.writeFile(urlOriginal, file.buffer, (err, result) => {
 
       if(err){
+        console.log(err);
         reject('FILE_SAVE_ERROR')
       }
 
@@ -57,8 +58,10 @@ const uploadAttachedFile = async (file, folder = 'files', alt = "", omitSaveDB =
           fileData.alt
         ],
         (result, err) => {
-          if(err)
+          if(err){
+            console.log(err)
             reject('FILE_SAVE_ERROR')
+          }
           else{
             resolve({
               id:result.insertId,

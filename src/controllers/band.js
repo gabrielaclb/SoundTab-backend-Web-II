@@ -1,5 +1,5 @@
 const db = require("./db");
-
+const fileService = require('../services/file')
 class BandController {
   constructor() {}
 
@@ -42,9 +42,16 @@ class BandController {
   create = async (req, res) => {
     let response = this.getResponse();
     try {
-      let { name, description, file_id } = req.body;
-      let band = await db.asyncQuery(queries.create, [name, description, null]);
-      response.data = { id: band.insertId, name, description, file_id };
+        let { name, description} = req.body;
+        let file_id = null;
+
+        if(req.file){
+            const file = await fileService.uploadAttachedFile(req.file, 'band');
+            file_id = file.id;
+        }
+
+        let band = await db.asyncQuery(queries.create, [name, description, file_id]);
+        response.data = { id: band.insertId, name, description, file_id };
     } catch (err) {
       console.log(err);
       response.error = err;
