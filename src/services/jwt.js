@@ -11,8 +11,7 @@ exports.createToken = (user) => {
     sub: user.id,
     name: user.name,
     email: user.email,
-    role: user.role,
-    permission: user.permission,
+    type_user_id: user.type_user_id,
     iat: moment().unix(),
     exp: moment().add(config.jwt.expirationDays, 'days').unix()
   }
