@@ -14,6 +14,7 @@ const albumRoutes = require('./routes/album');
 const soundRoutes = require('./routes/sound');
 const userRoutes = require('./routes/user');
 const favoriteRoutes = require('./routes/favorite');
+const listRoutes = require('./routes/list');
 
 // configure response
 app.use(express.urlencoded({
@@ -55,7 +56,8 @@ app.use('/api/v1', [
   albumRoutes,
   soundRoutes,
   userRoutes,
-  favoriteRoutes
+  favoriteRoutes,
+  listRoutes
 ]);
 
 app.get('/health', (req,res)=>{res.sendStatus(200)});

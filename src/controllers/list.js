@@ -15,7 +15,8 @@ class ListController {
     getAll = async (req,res)=>{
         let response = this.getResponse();
         try {
-
+            let data = await db.asyncQuery(queries.getAll)
+            response.data = data;
         } catch (error) {
             response.status = 500;
         }finally{
@@ -25,8 +26,12 @@ class ListController {
     getById = async (req,res)=>{
         let response = this.getResponse();
         try {
-
+            let data = await db.asyncQuery(queries.getById, [req.params.id])
+            response.data = data[0];
+            let data2 = await db.asyncQuery(queries.getSoundByList, [req.params.id]);
+            response.data.sounds = data2;
         } catch (error) {
+            console.log(error);
             response.status = 500;
         }finally{
             res.status(200).send(response);
@@ -35,7 +40,8 @@ class ListController {
     getByUserId = async (req,res)=>{
         let response = this.getResponse();
         try {
-
+            let data = await db.asyncQuery(queries.getByUserId, [req.params.id])
+            response.data = data;
         } catch (error) {
             response.status = 500;
         }finally{
@@ -45,7 +51,8 @@ class ListController {
     getMyList = async (req,res)=>{
         let response = this.getResponse();
         try {
-
+            let data = await db.asyncQuery(queries.getMyList, [req.user.sub])
+            response.data = data;
         } catch (error) {
             response.status = 500;
         }finally{
@@ -55,7 +62,11 @@ class ListController {
     createList = async (req,res)=>{
         let response = this.getResponse();
         try {
-
+            let data = await db.asyncQuery(queries.createList, [req.body.name, req.user.sub])
+            response.data = {
+                id: data.insertId,
+                name: req.body.name
+            };
         } catch (error) {
             response.status = 500;
         }finally{
@@ -65,7 +76,7 @@ class ListController {
     updateList = async (req,res)=>{
         let response = this.getResponse();
         try {
-
+            let data = await db.asyncQuery(queries.updateList, [req.body.name, req.body.id, req.user.sub])
         } catch (error) {
             response.status = 500;
         }finally{
@@ -75,7 +86,7 @@ class ListController {
     deleteList = async (req,res)=>{
         let response = this.getResponse();
         try {
-
+            let data = await db.asyncQuery(queries.deleteList, [req.params.id, req.user.sub])
         } catch (error) {
             response.status = 500;
         }finally{
@@ -85,8 +96,9 @@ class ListController {
     addSound = async (req,res)=>{
         let response = this.getResponse();
         try {
-
+            let data = await db.asyncQuery(queries.addSound, [req.body.id, req.body.sound_id])
         } catch (error) {
+            console.log(error);
             response.status = 500;
         }finally{
             res.status(200).send(response);
@@ -96,7 +108,7 @@ class ListController {
 
 const queries = {
     getAll: 'SELECT * FROM list',
-    getSoundByList: 'SELECT * FROM list_sound INNER JOIN sound ON list_sound.sound_id = ? WHERE list_id = ?',
+    getSoundByList: 'SELECT sound.*, file.url as file_url FROM list_sound INNER JOIN sound ON list_sound.sound_id = sound.id INNER JOIN file ON file.id = sound.file_id WHERE list_id = ?',
     getById: 'SELECT * FROM list WHERE id = ?',
     getByUserId: 'SELECT * FROM list WHERE user_id = ?',
     getMyList: 'SELECT * FROM list WHERE user_id = ?',
