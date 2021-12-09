@@ -55,6 +55,7 @@ class SoundController {
       const sound = await db.asyncQuery(queries.create, [title, album_id, file.id]);
       response.data = {
         id: sound.insertId,
+        title,
         album_id: album_id,
         file_id: sound.id,
         file_url: file.url,
